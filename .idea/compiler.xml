@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="dao" />
+        <module name="common" />
+        <module name="fds" />
+        <module name="fsa" />
+        <module name="web" />
+        <module name="service" />
+        <module name="gen-mybatis" />
+        <module name="testM" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common" target="1.8" />
+      <module name="dao" target="1.8" />
+      <module name="fds" target="1.8" />
+      <module name="fsa" target="1.8" />
+      <module name="gen-mybatis" target="1.8" />
+      <module name="service" target="1.8" />
+      <module name="testM" target="1.8" />
+      <module name="tmpTest" target="1.8" />
+      <module name="web" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="common" options="-parameters" />
+      <module name="dao" options="-parameters" />
+      <module name="fsa" options="-parameters" />
+      <module name="gen-mybatis" options="-parameters" />
+      <module name="service" options="-parameters" />
+      <module name="testM" options="-parameters" />
+      <module name="web" options="-parameters" />
+    </option>
+  </component>
+</project>
