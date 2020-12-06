@@ -4,18 +4,10 @@ package com.cn.xx.test;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 @DisplayName("我的第一个测试用例")
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
+
 public class UxxTest {
 
     @Autowired
@@ -45,7 +38,9 @@ public class UxxTest {
         subject.login(token);
     }
 
+    @Test
     public void fd(){
+
         SecurityUtils.setSecurityManager(securityManager);
 
         Subject subject = SecurityUtils.getSubject();
@@ -62,6 +57,19 @@ public class UxxTest {
             ex.printStackTrace();
             System.out.println(ex.getMessage());
         }
+
+        System.out.println(subject.isAuthenticated());
+
+//        subject.getSession(true);
+//        System.out.println(subject.getSession().getHost());
+//        System.out.println(subject.getSession().getId());
+
+        System.out.println(subject.isPermitted("ADD:vse"));
+//        System.out.println(subject.isPermittedAll("fs.ADD", "USER.ADD2"));
+
+        subject.logout();
+
+        System.out.println(subject.isAuthenticated());
 
         System.out.println("end =====================================");
 

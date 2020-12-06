@@ -1,15 +1,15 @@
 package com.cn.xx.test.shiro;
 
-import com.cn.xx.test.shiro.MyShiroRealm;
-import org.apache.shiro.authc.Authenticator;
+import com.cn.xx.test.shiro.AuthRealm.*;
+import com.cn.xx.test.shiro.Realm.*;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.pam.AllSuccessfulStrategy;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.codec.Base64;
-import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -17,22 +17,33 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Configuration
 public class ShiroConfig {
-    @Resource
-    private MyShiroRealm myShiroRealm;
 
     @Resource
     private MyRealm1 myRealm1;
+
+    @Resource
+    private MyRealm2 myRealm2;
+
+    @Resource
+    private MyRealm3 myRealm3;
+
+    @Resource
+    private MyShiroRealm3 myShiroRealm3;
+
+    @Resource
+    private MyShiroRealm1 myShiroRealm1;
+
+    @Resource
+    private MyShiroRealm2 myShiroRealm2;
 
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
@@ -51,7 +62,7 @@ public class ShiroConfig {
         //<!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
         filterChainDefinitionMap.put("/admin/**", "authc");
 
-        filterChainDefinitionMap.put("/**", "authc");
+        filterChainDefinitionMap.put("/**", "anon");
 
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         shiroFilterFactoryBean.setLoginUrl("/admin/login");
@@ -67,24 +78,6 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-
-        myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
-        myShiroRealm.setCachingEnabled(false);
-        securityManager.setRealm(myShiroRealm);
-
-        myRealm1.setCredentialsMatcher(hashedCredentialsMatcher());
-        myRealm1.setCachingEnabled(false);
-        securityManager.setRealm(myRealm1);
-
-        securityManager.setRememberMeManager(rememberMeManager());
-
-        return securityManager;
-    }
-
-    @Bean(autowireCandidate = false)
-    Authenticator authenticator() {
-        ModularRealmAuthenticator modularRealmAuthenticator = new ModularRealmAuthenticator();
-
         //返回找到的第一个
         FirstSuccessfulStrategy firstSuccessfulStrategy = new FirstSuccessfulStrategy();
         //多使用所有reaml均通过才算认证通过作为策略
@@ -92,10 +85,40 @@ public class ShiroConfig {
         //多使用所有reaml一个通过就算认证通过作为策略
         AtLeastOneSuccessfulStrategy atLeastOneSuccessfulStrategy = new AtLeastOneSuccessfulStrategy();
 
+        ModularRealmAuthenticator modularRealmAuthenticator = new ModularRealmAuthenticator();
         //使用一个通过验证即可通过验证的方式
-        modularRealmAuthenticator.setAuthenticationStrategy(firstSuccessfulStrategy);
-        return modularRealmAuthenticator;
+        modularRealmAuthenticator.setAuthenticationStrategy(atLeastOneSuccessfulStrategy);
+
+        securityManager.setAuthenticator(modularRealmAuthenticator);
+
+
+        myShiroRealm1.setCredentialsMatcher(hashedCredentialsMatcher());
+        myShiroRealm1.setCachingEnabled(false);
+        myShiroRealm2.setCredentialsMatcher(hashedCredentialsMatcher());
+        myShiroRealm2.setCachingEnabled(false);
+        myShiroRealm3.setCredentialsMatcher(hashedCredentialsMatcher());
+        myShiroRealm3.setCachingEnabled(false);
+        List fd = new ArrayList();
+        fd.add(myShiroRealm1);
+        fd.add(myShiroRealm2);
+        fd.add(myShiroRealm3);
+
+
+//        List fd = new ArrayList();
+//        fd.add(myRealm1);
+//        fd.add(myRealm2);
+//        fd.add(myRealm3);
+
+        securityManager.setRealms(fd);
+
+        //securityManager.setRealm(myRealm1);
+        //securityManager.setRealm(myShiroRealm);
+
+        securityManager.setRememberMeManager(rememberMeManager());
+
+        return securityManager;
     }
+
 
     @Bean(name = "credentialsMatcher")
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
@@ -170,11 +193,9 @@ public class ShiroConfig {
     }
 
     @Bean
-    public DefaultWebSessionManager sessionManager(){
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setSessionIdUrlRewritingEnabled(false);
-        sessionManager.setSessionIdCookieEnabled(false);
-        return sessionManager;
+    DefaultSessionManager sessionManager(){
+        DefaultSessionManager defaultSessionManager = new DefaultSessionManager();
+        return defaultSessionManager;
     }
 
 }

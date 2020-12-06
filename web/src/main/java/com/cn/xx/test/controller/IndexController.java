@@ -5,6 +5,7 @@ import com.cn.xx.test.service.RedisService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,8 @@ public class IndexController {
         System.out.println("start =====================================");
         try {
             subject.login(token);
+            PrincipalCollection principalCollection = subject.getPrincipals();
+            System.out.println(principalCollection.asList().size());
         }catch (AuthenticationException ex){
             ex.printStackTrace();
             System.out.println(ex.getMessage());
